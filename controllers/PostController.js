@@ -1,5 +1,20 @@
 import PostModel from "../models/Post.js"
 
+export const getLastTags = async(req, res) => {
+    try{
+        const posts = await PostModel.find().limit(5).exec() // to get full information about the user
+
+        const tags = posts.map(obj => obj.tags).flat().slice(0, 3)
+
+        res.json(tags)
+    } catch (err){
+        console.log(err)
+        res.status(505).json({
+            message: "Could not find tags",
+        })
+    }
+}
+
 export const getAll = async(req, res) => {
     try{
         const posts = await PostModel.find().populate("user").exec() // to get full information about the user

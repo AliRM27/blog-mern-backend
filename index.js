@@ -1,7 +1,7 @@
 import express from "express";
 import multer from "multer";
 import mongoose from "mongoose";
-
+import cors from "cors"
 import { registerValidation, loginValidation, postCreateValidation} from "./validations.js";
 import { checkAuth, handleValidationErrors } from "./utils/index.js";
 import { PostController, UserController } from "./controllers/index.js";
@@ -25,6 +25,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage })
 
 app.use(express.json()) //allow to read json in body eg.
+app.use(cors()) //to allow other domains to get requests
 app.use("/uploads", express.static("uploads")) //if a request comes from /uploads, check if there is a file in uploads
 
 //authotification
@@ -39,7 +40,8 @@ app.post("/upload", checkAuth, upload.single("image"), (req, res) => {
     })
 })
 
-//CRUD
+app.get("/tags", PostController.getLastTags)
+
 app.get("/posts", PostController.getAll)
 app.get("/posts/:id", PostController.getOne)
 app.post("/posts", checkAuth, postCreateValidation, handleValidationErrors, PostController.create)
